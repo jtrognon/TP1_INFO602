@@ -1,4 +1,4 @@
-export class MachineTuring {
+class MachineTuring {
     mtFileContent;
 
     states = [];
@@ -75,7 +75,8 @@ export class MachineTuring {
         // (?!.) -> match only if there is no character afterward
         // -> EOF
 
-        this.tape = this.mtFileContent.match(regexInitialTape)
+        
+        this.tape = this.mtFileContent.match(regexInitialTape)[0] // We only need the whole line
     }
 
     getCurrentState(){
@@ -87,6 +88,6 @@ export class MachineTuring {
     }
 
     getPosCursor(){
-        return 5;
+        return 0;
     }
 }

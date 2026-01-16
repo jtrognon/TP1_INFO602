@@ -1,7 +1,3 @@
-import { readFile } from "./../mt/utils.js";
-import { MachineTuring } from "./../mt/MachineTuring.js";
-
-
 function main() {
     readFile(result => {
         let mt = new MachineTuring(result);

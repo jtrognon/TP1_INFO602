@@ -1,4 +1,4 @@
-export function readFile(callBack) {
+function readFile(callBack) {
     let inputFile = document.querySelector("#mtFileSelector");
 
     inputFile.onchange = (_ => {
