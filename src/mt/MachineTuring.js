@@ -3,14 +3,14 @@ class MachineTuring {
 
     states = [];
     inputSymbols = [];
-    tapeAlphabet = [];
+    tapeAlphabets = [];
     blankSymbol;
     initialState;
     finalStates = [];
     transitions = {}; // exemple : transition.q0.a = {nextState: "q1", nextSymbol: "A", direction: "R"}
-    tape;
+    tapes = [];
 
-    cursorPos = 0;
+    cursorPos = [];
     currentState
 
     mtIsDone = false; // There is no next step
@@ -29,7 +29,7 @@ class MachineTuring {
         let sectionsArrays = /([^\n]+\n)+\n/g
         let sections = [...this.mtFileContent.matchAll(sectionsArrays)]; // array of the iterator
 
-        // states, input symbols, tape alphabet, final states
+        // states, input symbols, tapes alphabet, final states
 
         this.loadArrays([sections[0], sections[1], sections[2], sections[5]]);
 
@@ -47,7 +47,7 @@ class MachineTuring {
         let arrays = [
         this.states,
         this.inputSymbols,
-        this.tapeAlphabet,
+        this.tapeAlphabets,
         this.finalStates,
         ]
 
@@ -74,9 +74,19 @@ class MachineTuring {
     }
 
     loadTransitions(transitions){
+        let nbTapes = null;
+
         let regexTransition = /(.+),(.+)->(.+),(.+),(.+)/g
         
         transitions.matchAll(regexTransition).forEach(transition => {
+            if (nbTapes != transition[2].length || nbTapes != transition[4].length || nbTapes != transition[5].length){
+                if (nbTapes == null){
+                    nbTapes = transition[2].length;
+                } else {
+                    console.error("There is a different number of tapes");
+                }
+            }
+            
             if (transition != "" && transition.toString().match((/\/\*.*\*\//)) == null){
                 // starts at 1 because transition[0] is the whole line
                 if (transition[1] in this.transitions){ 
@@ -88,6 +98,8 @@ class MachineTuring {
                 }
             }
         })
+
+        this.cursorPos = new Array(nbTapes).fill(0);
     }
 
     loadInitialTape(){
@@ -97,15 +109,21 @@ class MachineTuring {
         // -> EOF
 
         
-        this.tape = [...this.mtFileContent.match(regexInitialTape)[0]]; // We are converting it to an array to be able to modify it
+        this.tapes = [[...this.mtFileContent.match(regexInitialTape)[0]]]; // We are converting it to an array to be able to modify it
+
+        // secondary tapes
+        for (let i = 0; i < this.cursorPos.length-1; i++) {
+            this.tapes.push(["#"]);
+        }
+
     }
 
     getCurrentState(){
         return this.currentState;
     }
 
-    getTape(){
-        return this.tape;
+    getTapes(){
+        return this.tapes;
     }
 
     getPosCursor(){
@@ -113,39 +131,51 @@ class MachineTuring {
     }
 
     next(){
-        if (!(this.currentState in this.transitions) || !(this.tape[this.cursorPos] in this.transitions[this.currentState])){
-            this.mtIsDone = true; // because there is no possible transition
-
+        if (this.isDone()){
             this.wordIsRecognized = this.currentState in this.finalStates; // the word is recognized if the current state is a final state
         } else {           
-            let nextStep = this.transitions[this.currentState][this.tape[this.cursorPos]];
+            let nextStep = this.transitions[this.currentState][this.getCurrentSymbols()];
             
             this.currentState = nextStep.nextState;
             
-            this.tape[this.cursorPos] = nextStep.nextSymbol;
+            for (let i = 0; i < this.cursorPos.length; i++) {
+                this.tapes[i][this.cursorPos[i]] = nextStep.nextSymbol[i];   
+            }
             
-            if (nextStep.direction == "R"){
-                if (this.cursorPos + 1 == this.tape.length){ // infinite blank symbols
-                    this.tape.push(this.blankSymbol);
+            for (let i = 0; i < this.cursorPos.length; i++) {
+                if (nextStep.direction[i] == "R"){
+                    if (this.cursorPos + 1 == this.tapes.length){ // infinite blank symbols
+                        this.tapes[i].push(this.blankSymbol);
+                    }
+                    
+                    this.cursorPos += 1;
+                } else {
+                    if (this.cursorPos == 0){ // infinite blank symbols
+                        this.tapes[i].unshift(this.blankSymbol);
+                    }
+                    
+                    this.cursorPos -= 1;
                 }
-                
-                this.cursorPos += 1;
-            } else {
-                if (this.cursorPos == 0){ // infinite blank symbols
-                    this.tape.unshift(this.blankSymbol);
-                }
-                
-                this.cursorPos -= 1;
             }
         }
     }
 
 
     isDone(){
-        return this.mtIsDone;
+        return !(this.currentState in this.transitions) || !(this.getCurrentSymbols in this.transitions[this.currentState]);
     }
 
     isRecognized(){
         return this.wordIsRecognized;
+    }
+
+    getCurrentSymbols(){
+        let currentSymbols = [];
+
+        for (let i = 0; i < this.cursorPos.length; i++) {
+            currentSymbols.push(this.tapes[i][this.cursorPos[i]]);
+        }
+
+        return currentSymbols;
     }
 }
