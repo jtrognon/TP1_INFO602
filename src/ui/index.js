@@ -13,48 +13,56 @@ function loadMtUI(mt) {
     execution.innerHTML = "";
 
     const currentState = mt.getCurrentState();
-    const tape = mt.getTapes()[0];
-    const posCursor = mt.getPosCursor()[0];
+    const tapes = mt.getTapes();
+    const posCursors = mt.getPosCursor();
 
-    const table = split(tape);
-    execution.appendChild(table);
+    for (let i=0; i<tapes.length; i++) {
+        const tape = tapes[i];
+        const posCursor = posCursors[i];
 
-    const state = document.createElement('div');
-    state.id = "state";
+        const ruban = document.createElement('div');
+        ruban.id = "ruban" + i;
 
-    const cState = document.createElement('div');
+        const table = split(tape);
+        ruban.appendChild(table);
+        execution.appendChild(ruban);
 
-    cState.innerText = "État courant : ";
-    cState.append(currentState);
+        const idCursor = getIdCursor(posCursor);
+        const element = document.getElementById(idCursor);
+        colorCursor(element);
+    }
 
-    const nextButton = document.createElement('button');
-    nextButton.type = "button";
-    nextButton.name = "Next";
-    nextButton.innerText = "Suivant";
-    nextButton.addEventListener("click", (event) => {
-        mt.next();
-        loadMtUI(mt);
-    })
+        const state = document.createElement('div');
+        state.id = "state";
 
-    state.appendChild(cState);
-    state.appendChild(nextButton);
-    execution.appendChild(state);
+        const cState = document.createElement('div');
 
-    const idCursor = getIdCursor(posCursor);
-    const element = document.getElementById(idCursor);
-    colorCursor(element);
+        cState.innerText = "État courant : ";
+        cState.append(currentState);
 
+        const nextButton = document.createElement('button');
+        nextButton.type = "button";
+        nextButton.name = "Next";
+        nextButton.innerText = "Suivant";
+        nextButton.addEventListener("click", (event) => {
+            mt.next();
+            loadMtUI(mt);
+        })
 
-    if(mt.isDone()) {
-        const recognized = document.createElement('div');
-        recognized.id = "recognized";
+        state.appendChild(cState);
+        state.appendChild(nextButton);
+        execution.appendChild(state);
 
-        if(mt.isRecognized()) {
-            recognized.innerText = "Mot reconnu !";
-        } else {
-            recognized.innerText = "Mot pas reconnu ...";
-        }
-        execution.appendChild(recognized);
+        if(mt.isDone()) {
+            const recognized = document.createElement('div');
+            recognized.id = "recognized";
+
+            if(mt.isRecognized()) {
+                recognized.innerText = "Mot reconnu !";
+            } else {
+                recognized.innerText = "Mot pas reconnu ...";
+            }
+            execution.appendChild(recognized);
     }
 }
 
