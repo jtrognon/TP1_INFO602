@@ -13,6 +13,9 @@ class MachineTuring {
     cursorPos = 0;
     currentState
 
+    mtIsDone = false; // There is no next step
+    wordIsRecognized; // True if the given word is recognized
+
     constructor(mtFileContent) {
         this.mtFileContent = mtFileContent;
 
@@ -111,8 +114,9 @@ class MachineTuring {
 
     next(){
         if (!(this.currentState in this.transitions) || !(this.tape[this.cursorPos] in this.transitions[this.currentState])){
-            console.log("mot reconnu ", this.currentState in this.finalStates);
-            
+            this.mtIsDone = true; // because there is no possible transition
+
+            this.wordIsRecognized = this.currentState in this.finalStates; // the word is recognized if the current state is a final state
         } else {           
             let nextStep = this.transitions[this.currentState][this.tape[this.cursorPos]];
             
@@ -134,5 +138,14 @@ class MachineTuring {
                 this.cursorPos -= 1;
             }
         }
+    }
+
+
+    isDone(){
+        return this.mtIsDone;
+    }
+
+    isRecognized(){
+        return this.wordIsRecognized;
     }
 }
