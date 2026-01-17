@@ -4,31 +4,40 @@ class MachineTuring {
     states = [];
     inputSymbols = [];
     tapeAlphabet = [];
-    blankSymbol = [];
-    initialState = [];
+    blankSymbol;
+    initialState;
     finalStates = [];
     transitions = {}; // exemple : transition.q0.a = {nextState: "q1", nextSymbol: "A", direction: "R"}
     tape;
+
+    cursorPos = 0;
+    currentState
 
     constructor(mtFileContent) {
         this.mtFileContent = mtFileContent;
 
         this.load();
+
+        this.currentState = this.initialState;
     }
 
     load(){
-        
         // Get arrays data
         let sectionsArrays = /([^\n]+\n)+\n/g
         let sections = [...this.mtFileContent.matchAll(sectionsArrays)]; // array of the iterator
 
-        this.loadArrays(sections);
-        
+        // states, input symbols, tape alphabet, final states
+
+        this.loadArrays([sections[0], sections[1], sections[2], sections[5]]);
+
+        // blank symbol, initial state
+        this.blankSymbol = this.getStringValue(sections[3][0]);
+        this.initialState = this.getStringValue(sections[4][0]);
+
         // sections[6][0] == transitions
         this.loadTransitions(sections[6][0])
 
         this.loadInitialTape();
-        
     }
 
     loadArrays(sections){
@@ -36,8 +45,6 @@ class MachineTuring {
         this.states,
         this.inputSymbols,
         this.tapeAlphabet,
-        this.blankSymbol,
-        this.initialState,
         this.finalStates,
         ]
 
@@ -49,7 +56,18 @@ class MachineTuring {
                 }
             });
         }
+    }
 
+    getStringValue(section){
+        let res = "";
+        section.split("\n").forEach(line => {
+            // Not a comment and not an empty line
+            if (line != "" && line.match((/\/\*.*\*\//)) == null){
+                res = line;
+            }
+        });
+
+        return res;
     }
 
     loadTransitions(transitions){
@@ -76,11 +94,11 @@ class MachineTuring {
         // -> EOF
 
         
-        this.tape = this.mtFileContent.match(regexInitialTape)[0] // We only need the whole line
+        this.tape = [...this.mtFileContent.match(regexInitialTape)[0]]; // We are converting it to an array to be able to modify it
     }
 
     getCurrentState(){
-        return "q0";
+        return this.currentState;
     }
 
     getTape(){
@@ -88,6 +106,33 @@ class MachineTuring {
     }
 
     getPosCursor(){
-        return 0;
+        return this.cursorPos;
+    }
+
+    next(){
+        if (!(this.currentState in this.transitions) || !(this.tape[this.cursorPos] in this.transitions[this.currentState])){
+            console.log("mot reconnu ", this.currentState in this.finalStates);
+            
+        } else {           
+            let nextStep = this.transitions[this.currentState][this.tape[this.cursorPos]];
+            
+            this.currentState = nextStep.nextState;
+            
+            this.tape[this.cursorPos] = nextStep.nextSymbol;
+            
+            if (nextStep.direction == "R"){
+                if (this.cursorPos + 1 == this.tape.length){ // infinite blank symbols
+                    this.tape.push(this.blankSymbol);
+                }
+                
+                this.cursorPos += 1;
+            } else {
+                if (this.cursorPos == 0){ // infinite blank symbols
+                    this.tape.unshift(this.blankSymbol);
+                }
+                
+                this.cursorPos -= 1;
+            }
+        }
     }
 }
