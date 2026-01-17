@@ -9,6 +9,9 @@ function main() {
 
 
 function loadMtUI(mt) {
+
+    execution.innerHTML = "";
+    
     const currentState = mt.getCurrentState();
     const tape = mt.getTape();
     const posCursor = mt.getPosCursor();
@@ -28,6 +31,10 @@ function loadMtUI(mt) {
     nextButton.type = "button";
     nextButton.name = "Next";
     nextButton.innerText = "Suivant";
+    nextButton.addEventListener("click", (event) => {
+        mt.next();
+        loadMtUI(mt);
+    })
 
     console.log(nextButton);
 
