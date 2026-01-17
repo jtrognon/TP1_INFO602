@@ -13,9 +13,6 @@ class MachineTuring {
     cursorPos = [];
     currentState
 
-    mtIsDone = false; // There is no next step
-    wordIsRecognized; // True if the given word is recognized
-
     constructor(mtFileContent) {
         this.mtFileContent = mtFileContent;
 
@@ -131,30 +128,29 @@ class MachineTuring {
     }
 
     next(){
-        if (this.isDone()){
-            this.wordIsRecognized = this.currentState in this.finalStates; // the word is recognized if the current state is a final state
-        } else {           
+        if (!this.isDone()){           
             let nextStep = this.transitions[this.currentState][this.getCurrentSymbols()];
-            
+
             this.currentState = nextStep.nextState;
             
             for (let i = 0; i < this.cursorPos.length; i++) {
+                
                 this.tapes[i][this.cursorPos[i]] = nextStep.nextSymbol[i];   
             }
             
             for (let i = 0; i < this.cursorPos.length; i++) {
                 if (nextStep.direction[i] == "R"){
-                    if (this.cursorPos + 1 == this.tapes.length){ // infinite blank symbols
+                    if (this.cursorPos[i] + 1 == this.tapes[i].length){ // infinite blank symbols
                         this.tapes[i].push(this.blankSymbol);
                     }
                     
-                    this.cursorPos += 1;
+                    this.cursorPos[i] += 1;
                 } else {
-                    if (this.cursorPos == 0){ // infinite blank symbols
+                    if (this.cursorPos[i] == 0){ // infinite blank symbols
                         this.tapes[i].unshift(this.blankSymbol);
                     }
                     
-                    this.cursorPos -= 1;
+                    this.cursorPos[i] -= 1;
                 }
             }
         }
@@ -162,11 +158,11 @@ class MachineTuring {
 
 
     isDone(){
-        return !(this.currentState in this.transitions) || !(this.getCurrentSymbols in this.transitions[this.currentState]);
+        return !(this.currentState in this.transitions) || !(this.getCurrentSymbols() in this.transitions[this.currentState]);
     }
 
     isRecognized(){
-        return this.wordIsRecognized;
+        return this.finalStates.includes(this.currentState); // the word is recognized if the current state is a final state
     }
 
     getCurrentSymbols(){
@@ -176,6 +172,6 @@ class MachineTuring {
             currentSymbols.push(this.tapes[i][this.cursorPos[i]]);
         }
 
-        return currentSymbols;
+        return currentSymbols.join('');
     }
 }

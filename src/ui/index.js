@@ -13,8 +13,8 @@ function loadMtUI(mt) {
     execution.innerHTML = "";
 
     const currentState = mt.getCurrentState();
-    const tape = mt.getTape();
-    const posCursor = mt.getPosCursor();
+    const tape = mt.getTapes()[0];
+    const posCursor = mt.getPosCursor()[0];
 
     const table = split(tape);
     execution.appendChild(table);
