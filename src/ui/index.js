@@ -11,6 +11,7 @@ function main() {
 function loadMtUI(mt) {
 
     execution.innerHTML = "";
+    removeAllCursors();
 
     const currentState = mt.getCurrentState();
     const tapes = mt.getTapes();
@@ -18,18 +19,21 @@ function loadMtUI(mt) {
 
     for (let i=0; i<tapes.length; i++) {
         const tape = tapes[i];
-        const posCursor = posCursors[i];
 
         const ruban = document.createElement('div');
         ruban.id = "ruban" + i;
 
-        const table = split(tape);
+        const table = split(tape,i);
         ruban.appendChild(table);
         execution.appendChild(ruban);
 
-        const idCursor = getIdCursor(posCursor);
-        const element = document.getElementById(idCursor);
-        colorCursor(element);
+        for (let j=0; j<posCursors.length; j++) {
+            const currentPos = posCursors[j];
+
+            const idCursor = getIdCursor(currentPos,i);
+            const element = document.getElementById(idCursor);
+            colorCursor(element);
+        }
     }
 
         const state = document.createElement('div');
@@ -66,12 +70,12 @@ function loadMtUI(mt) {
     }
 }
 
-function split(tape) {
+function split(tape, tapeIndex) {
     const table = document.createElement('div');
     table.id = "table";
     for (let i=0; i<tape.length; i++) {
         const tab = document.createElement('p');
-        tab.id = "tab"+i;
+        tab.id = "tape"+tapeIndex+"-tab"+i;
 
         tab.innerText = tape[i];
         table.appendChild(tab);
@@ -79,20 +83,16 @@ function split(tape) {
     return table;
 }
 
-function getIdCursor(posCursor) {
-    return "tab"+posCursor;
+function getIdCursor(posCursor, tapeIndex) {
+    return "tape"+tapeIndex+"-tab"+posCursor;
 }
 
-function removeClass() {
-    const previousCursor = document.querySelector(".color");
-
-    if (previousCursor) {
-        previousCursor.classList.remove("color");
-    }
+function removeAllCursors() {
+    const previousCursors = document.querySelectorAll(".color");
+    previousCursors.forEach(elem => elem.classList.remove("color"));
 }
 
 function colorCursor(element) {
-    removeClass();
 
     element.classList.add("color");
 }
