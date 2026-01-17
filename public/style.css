@@ -3,36 +3,50 @@ h1 {
     margin-bottom: 30px;
 }
 
-#execution div {
-    margin-top: 25px;
-    margin-bottom: 25px;
+#execution {
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
 }
 
 #table {
-    display: flex;
-    border: 1px solid;
-    align-items: stretch;
+    display: inline-flex;
+    background-color: transparent;
+    overflow-x: auto;
+    max-width: 95vw;
+    margin: 25px auto;
+
+    border: none;
+
+    padding-bottom: 40px;
 }
 
 #table p {
-    flex: 1;        
-    margin: 0;       
+    width: 50px;
+    height: 50px;
+    flex: 0 0 50px;
+    margin: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-right: 1px solid black;
 
-    position: relative; 
-    overflow: visible;
+    border: 1px solid black;
+    border-left: none;
+
+    position: relative;
+    box-sizing: border-box;
 }
 
-#table p:last-child {
-    border-right: none;
+#table p:first-child {
+    border-left: 1px solid black;
 }
 
 #state {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    max-width: 95vw;
+    margin: 0 auto;
 }
 
 .color {
@@ -43,13 +57,12 @@ h1 {
 .color::after {
     content: "▲";
     position: absolute;
-    bottom: -25px;
+
+    bottom: -25px; 
     left: 50%;
     transform: translateX(-50%);
     color: #3b82f6; 
     font-size: 20px;
-
-    transition: all 0.3s ease; 
 }
 
 #state button {
@@ -72,4 +85,22 @@ h1 {
 
 #state button:hover {
     background-color: #2563EB;
+}
+
+#recognized{
+    background-color: #EFF6FF;
+    color: #3B82F6;
+    border: 2px solid #3B82F6;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 20px;
+    font-size: 1.1em;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }

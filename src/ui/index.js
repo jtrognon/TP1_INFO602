@@ -11,7 +11,7 @@ function main() {
 function loadMtUI(mt) {
 
     execution.innerHTML = "";
-    
+
     const currentState = mt.getCurrentState();
     const tape = mt.getTape();
     const posCursor = mt.getPosCursor();
@@ -36,16 +36,26 @@ function loadMtUI(mt) {
         loadMtUI(mt);
     })
 
-    console.log(nextButton);
-
     state.appendChild(cState);
     state.appendChild(nextButton);
-
     execution.appendChild(state);
 
     const idCursor = getIdCursor(posCursor);
     const element = document.getElementById(idCursor);
     colorCursor(element);
+
+
+    if(mt.isDone()) {
+        const recognized = document.createElement('div');
+        recognized.id = "recognized";
+
+        if(mt.isRecognized()) {
+            recognized.innerText = "Mot reconnu !";
+        } else {
+            recognized.innerText = "Mot pas reconnu ...";
+        }
+        execution.appendChild(recognized);
+    }
 }
 
 function split(tape) {
