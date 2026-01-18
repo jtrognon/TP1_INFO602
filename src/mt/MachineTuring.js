@@ -3,7 +3,7 @@ class MachineTuring {
 
     states = [];
     inputSymbols = [];
-    tapeAlphabets = [];
+    tapeAlphabet = [];
     blankSymbol;
     initialState;
     finalStates = [];
@@ -12,6 +12,8 @@ class MachineTuring {
 
     cursorPos = [];
     currentState
+
+    mtIsCorrect = true;
 
     constructor(mtFileContent) {
         this.mtFileContent = mtFileContent;
@@ -44,7 +46,7 @@ class MachineTuring {
         let arrays = [
         this.states,
         this.inputSymbols,
-        this.tapeAlphabets,
+        this.tapeAlphabet,
         this.finalStates,
         ]
 
@@ -56,6 +58,8 @@ class MachineTuring {
                 }
             });
         }
+
+        this.inputSymbols.push("#");
     }
 
     getStringValue(section){
@@ -72,6 +76,7 @@ class MachineTuring {
 
     loadTransitions(transitions){
         let nbTapes = null;
+        let unusedStates = [...this.states]; // [...array] is ok to clone a 1D array 
 
         let regexTransition = /(.+),(.+)->(.+),(.+),(.+)/g
         
@@ -81,20 +86,54 @@ class MachineTuring {
                     nbTapes = transition[2].length;
                 } else {
                     console.error("There is a different number of tapes");
+                    this.mtIsCorrect = false;
                 }
             }
             
             if (transition != "" && transition.toString().match((/\/\*.*\*\//)) == null){
                 // starts at 1 because transition[0] is the whole line
-                if (transition[1] in this.transitions){ 
-                    // impossible to have a nondeterministic Turing Machine so 'transition[2]' cannot already exist in 'this.transitions[transition[1]]'
-                    this.transitions[transition[1]][transition[2]] = {nextState: transition[3], nextSymbol: transition[4], direction: transition[5]}
+
+                if ((! this.states.includes(transition[1])) || (! this.states.includes(transition[3]))){ // Check for an unknown state
+                    console.error("a state isn't in the states list.");
+                    this.mtIsCorrect = false;
+                } else if (this.areUnknown(transition[2], this.tapeAlphabet) || this.areUnknown(transition[4], this.tapeAlphabet)){ // check for an unknown symbol
+                    console.error("a symbol isn't part of the alphabet");
+                    this.mtIsCorrect = false;
+                } else if (this.areUnknown(transition[5], ["L", "R"])) { // check for an other direction
+                    console.error("Unknown direction");
+                    this.mtIsCorrect = false;
                 } else {
-                    this.transitions[transition[1]] = {};
-                    this.transitions[transition[1]][transition[2]] = {nextState: transition[3], nextSymbol: transition[4], direction: transition[5]}
+                    if (transition[1] in this.transitions){ 
+                        if (transition[2] in this.transitions[transition[1]]) { // nondeterministic Turing Machine
+                            console.error("Transition already exists. Cannot have a nondeterministic TM.");
+                            this.mtIsCorrect = false;
+                        } else {
+                            this.transitions[transition[1]][transition[2]] = {nextState: transition[3], nextSymbol: transition[4], direction: transition[5]}
+                        }
+                    } else {
+                        this.transitions[transition[1]] = {};
+                        this.transitions[transition[1]][transition[2]] = {nextState: transition[3], nextSymbol: transition[4], direction: transition[5]}
+                    }
+
+                    // remove states of transitions from unused states
+                    let indexInitialState = unusedStates.indexOf(transition[1]);
+                    let indexNextState = unusedStates.indexOf(transition[3]);
+
+                    if (indexInitialState != -1){
+                        unusedStates.splice(indexInitialState, 1);
+                    }
+
+                    if (indexNextState != -1){
+                        unusedStates.splice(indexNextState, 1);
+                    }
                 }
             }
         })
+
+        if (unusedStates.length > 0){
+            console.error("There is at least one unused state.");
+            this.mtIsCorrect = false;
+        }
 
         this.cursorPos = new Array(nbTapes).fill(0);
     }
@@ -107,6 +146,11 @@ class MachineTuring {
 
         
         this.tapes = [[...this.mtFileContent.match(regexInitialTape)[0]]]; // We are converting it to an array to be able to modify it
+
+        if (this.checkTapes()){
+            console.error("Unknown initial symbol in one of the tapes.");
+            this.mtIsCorrect = false;            
+        }
 
         // secondary tapes
         for (let i = 0; i < this.cursorPos.length-1; i++) {
@@ -173,5 +217,40 @@ class MachineTuring {
         }
 
         return currentSymbols.join('');
+    }
+
+    isCorrect(){
+        return this.mtIsCorrect;
+    }
+
+    areUnknown(elements, array){
+        let containsUnknown = false;
+        
+        let nbElements = elements.length;
+        let i = 0;
+
+        while (!containsUnknown && i < nbElements) {
+            containsUnknown = ! array.includes(elements[i]);
+
+            i++;
+        }
+
+        return containsUnknown;
+    }
+
+
+    checkTapes(){
+        let containsUnknown = false;
+
+        let i = 0;
+        let nbTapes = this.tapes.length;
+
+        while (!containsUnknown && i < nbTapes){
+            containsUnknown = this.areUnknown(this.tapes[i], this.inputSymbols);
+
+            i++;
+        }
+
+        return containsUnknown;
     }
 }

@@ -1,6 +1,7 @@
 /*  States */
 q0
 q1
+q2
 
 /*  Input symbols */
 a
@@ -23,9 +24,9 @@ q0
 q1
 
 /*  Transitions */
-q0,a##->q0,#AB,RRR
-q0,b##->q0,#BA,RRR
-q0,###->q1,###,LRL
+q0,a->q0,A,R
+q0,b->q0,B,R
+q0,#->q1,#,L
 
 /* Initial tape */
 aaabb
