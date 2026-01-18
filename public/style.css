@@ -1,6 +1,39 @@
 h1 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 2.5rem;
     text-align: center;
-    margin-bottom: 30px;
+    color: #1a202c;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    border-radius: 2px;
+}
+
+#cState {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.2rem;
+    color: #4a5568;
+    background-color: #f8fafc;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border-left: 5px solid #3b82f6;
+    display: inline-block;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 #execution {

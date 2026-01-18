@@ -38,6 +38,7 @@ function loadMtUI(mt) {
         state.id = "state";
 
         const cState = document.createElement('div');
+        cState.id = "cState";
 
         cState.innerText = "État courant : ";
         cState.append(currentState);
