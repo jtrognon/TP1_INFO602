@@ -29,7 +29,6 @@ class MachineTuring {
         let sections = [...this.mtFileContent.matchAll(sectionsArrays)]; // array of the iterator
 
         // states, input symbols, tapes alphabet, final states
-
         this.loadArrays([sections[0], sections[1], sections[2], sections[5]]);
 
         // blank symbol, initial state
@@ -92,7 +91,6 @@ class MachineTuring {
             
             if (transition != "" && transition.toString().match((/\/\*.*\*\//)) == null){
                 // starts at 1 because transition[0] is the whole line
-
                 if ((! this.states.includes(transition[1])) || (! this.states.includes(transition[3]))){ // Check for an unknown state
                     console.error("a state isn't in the states list.");
                     this.mtIsCorrect = false;
@@ -182,7 +180,7 @@ class MachineTuring {
                 this.tapes[i][this.cursorPos[i]] = nextStep.nextSymbol[i];   
             }
             
-            for (let i = 0; i < this.cursorPos.length; i++) {
+            for (let i = 0; i < this.cursorPos.length; i++) { // change the cursor pos for each tape
                 if (nextStep.direction[i] == "R"){
                     if (this.cursorPos[i] + 1 == this.tapes[i].length){ // infinite blank symbols
                         this.tapes[i].push(this.blankSymbol);
@@ -223,7 +221,7 @@ class MachineTuring {
         return this.mtIsCorrect;
     }
 
-    areUnknown(elements, array){
+    areUnknown(elements, array){ // Unknown symbols, directions, ...
         let containsUnknown = false;
         
         let nbElements = elements.length;
