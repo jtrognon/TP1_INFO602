@@ -25,7 +25,7 @@ q1
 /*  Transitions */
 q0,a#->q0,#A,RR
 q0,b#->q0,#B,RR
-q0,##->q1,##,LL
+q0,##->q1,##,LR
 
 /* Initial tape */
 aaabb

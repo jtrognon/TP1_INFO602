@@ -27,13 +27,11 @@ function loadMtUI(mt) {
         ruban.appendChild(table);
         execution.appendChild(ruban);
 
-        for (let j=0; j<posCursors.length; j++) {
-            const currentPos = posCursors[j];
+        const currentPos = posCursors[i];
 
-            const idCursor = getIdCursor(currentPos,i);
-            const element = document.getElementById(idCursor);
-            colorCursor(element);
-        }
+        const idCursor = getIdCursor(currentPos,i);
+        const element = document.getElementById(idCursor);
+        colorCursor(element);
     }
 
         const state = document.createElement('div');
