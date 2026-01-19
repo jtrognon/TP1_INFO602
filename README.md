@@ -12,6 +12,8 @@ Machine de Turing
 
 - Chargement d'une machine de Turing à partir d'un fichier.
 - Utilisation de plusieurs rubans (voir */mtExamples/multi_tapes.mt*).
+- Visualisation de la table de transitions.
+- Changement de langue. 
 
 ## 3 - Test de différentes Machines de Turing
 

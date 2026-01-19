@@ -85,8 +85,7 @@ class MachineTuring {
                 if (nbTapes == null){
                     nbTapes = transition[2].length;
                 } else {
-                    this.mtErrorCode = "There is a different number of tapes.";
-                    console.error(this.mtErrorCode);
+                    this.mtErrorCode = "nbTapes";
                     this.mtIsCorrect = false;
                 }
             }
@@ -94,22 +93,18 @@ class MachineTuring {
             if (transition != "" && transition.toString().match((/\/\*.*\*\//)) == null){
                 // starts at 1 because transition[0] is the whole line
                 if ((! this.states.includes(transition[1])) || (! this.states.includes(transition[3]))){ // Check for an unknown state
-                    this.mtErrorCode = "A state isn't in the states list.";
-                    console.error(this.mtErrorCode);
+                    this.mtErrorCode = "unknownState";
                     this.mtIsCorrect = false;
                 } else if (this.areUnknown(transition[2], this.tapeAlphabet) || this.areUnknown(transition[4], this.tapeAlphabet)){ // check for an unknown symbol
-                    this.mtErrorCode = "A symbol isn't part of the alphabet.";
-                    console.error(this.mtErrorCode);
+                    this.mtErrorCode = "unknownSymbol";
                     this.mtIsCorrect = false;
                 } else if (this.areUnknown(transition[5], ["L", "R"])) { // check for an other direction
-                    this.mtErrorCode = "Unknown direction.";
-                    console.error(this.mtErrorCode);
+                    this.mtErrorCode = "unknownDirection";
                     this.mtIsCorrect = false;
                 } else {
                     if (transition[1] in this.transitions){ 
                         if (transition[2] in this.transitions[transition[1]]) { // nondeterministic Turing Machine
-                            this.mtErrorCode = "Transition already exists. Cannot have a nondeterministic TM.";
-                            console.error(this.mtErrorCode);
+                            this.mtErrorCode = "nondeterministicTM";
                             this.mtIsCorrect = false;
                         } else {
                             this.transitions[transition[1]][transition[2]] = {nextState: transition[3], nextSymbol: transition[4], direction: transition[5]}
@@ -135,8 +130,7 @@ class MachineTuring {
         })
 
         if (unusedStates.length > 0){
-            this.mtErrorCode = "There is at least one unused state.";
-            console.error(this.mtErrorCode);
+            this.mtErrorCode = "unusedState";
             this.mtIsCorrect = false;
         }
 
@@ -153,8 +147,7 @@ class MachineTuring {
         this.tapes = [[...this.mtFileContent.match(regexInitialTape)[0]]]; // We are converting it to an array to be able to modify it
 
         if (this.checkTapes()){
-            this.mtErrorCode = "Unknown initial symbol in one of the tapes.";
-            console.error(this.mtErrorCode);
+            this.mtErrorCode = "unknownInitialSymbol";
             this.mtIsCorrect = false;            
         }
 
