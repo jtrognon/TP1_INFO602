@@ -42,6 +42,39 @@ h1::after {
     text-align: center;
 }
 
+#tabTransitions {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    font-family: 'Inter', sans-serif;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+#tabTransitions thead {
+    background-color: #f8f9fa;
+    color: #555;
+}
+
+#tabTransitions th, #tabTransitions td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #e2e8f0; 
+    border-right: 1px solid #e2e8f0;
+}
+
+#tabTransitions th {
+    color: #1a202c;
+    font-weight: bold;
+    background-color: #fcfcfc;
+}
+
+#tabTransitions td:first-child {
+    font-weight: bold;
+    background-color: #fcfcfc;
+}
+
 #table {
     display: inline-flex;
     background-color: transparent;
