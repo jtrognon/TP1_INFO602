@@ -1,6 +1,6 @@
 const translations = {
     "en": {
-        "title": "Turing Machine Simulator",
+        "title": "Turing Machine",
         "currentState": "Current state",
         "button": {
             "previous": "Previous",
@@ -22,7 +22,7 @@ const translations = {
         }
     },
     "fr" : {
-        "title": "Simulateur de Machine de Turing",
+        "title": "Machine de Turing",
         "currentState": "État courant",
         "button": {
             "previous": "Précédent",

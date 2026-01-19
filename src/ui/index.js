@@ -183,7 +183,7 @@ main();
 
 
 function addLangSelect(container){
-    let langSelect = document.createElement("select");
+    let langSelect = document.createElement("div");
     langSelect.id = "langSelect";
 
     // add options
@@ -195,21 +195,51 @@ function addLangSelect(container){
         languages = ["fr", "en"];
     }
 
+    /* Selected language */
+
+    let selectedLang = document.createElement("p");
+    selectedLang.id = "selectedLang";
+    selectedLang.innerHTML = language.toUpperCase();
+    langSelect.appendChild(selectedLang);
+
+    /* languages options */
+
+    let langList = document.createElement("div");
+    langList.id = "langList";
+    langList.classList.add("hidden");
+    langSelect.appendChild(langList)
+
     languages.forEach(lang => {
-        let langChoice = document.createElement("option");
-        
+        let langChoice = document.createElement("button");
+        langChoice.classList.add("langChoice");
+
         langChoice.value = lang;
         langChoice.innerHTML = lang.toUpperCase();
 
-        langSelect.appendChild(langChoice);
-    });
+        langList.appendChild(langChoice);
 
-    // Change language and update vue
-    langSelect.onchange = (e => {
-        if (langSelect.value != language){
-            changeLang(langSelect.value);
+
+        // Change language and update vue
+        langChoice.onclick = (_ => {
+        if (langChoice.value != language){
+            changeLang(langChoice.value);
         }
     });
+    });
+
+
+
+    /* show options */
+
+    langSelect.addEventListener("mouseover", _ => {
+        langList.classList.remove("hidden");
+        selectedLang.classList.add("open");
+    })
+
+    langSelect.addEventListener("mouseout", _ => {
+        langList.classList.add("hidden");
+        selectedLang.classList.remove("open");
+    })
 
     container.appendChild(langSelect);
 }
@@ -222,6 +252,8 @@ function changeLang(lang) {
 
     
     document.querySelector("h1").innerHTML = i18n("title");
+
+    document.querySelector("#selectedLang").innerHTML = language.toUpperCase();
     
     if (mt != undefined){
         if (!mt.isCorrect()){
