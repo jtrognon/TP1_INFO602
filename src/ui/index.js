@@ -73,7 +73,7 @@ function loadMtUI(mt) {
         const divError = document.createElement('div');
         divError.id = "error";
 
-        divError.innerText = "Erreur : le fichier n'est pas valide";
+        divError.innerText = "Erreur : " + mt.getErrorCode();
         execution.appendChild(divError);
     }
 }
