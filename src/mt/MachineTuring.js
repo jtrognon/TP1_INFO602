@@ -264,4 +264,8 @@ class MachineTuring {
     getErrorCode(){
         return this.mtErrorCode;
     }
+
+    getTransitions(){
+        return this.transitions;
+    }
 }
