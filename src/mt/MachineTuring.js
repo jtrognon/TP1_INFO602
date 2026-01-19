@@ -7,13 +7,14 @@ class MachineTuring {
     blankSymbol;
     initialState;
     finalStates = [];
-    transitions = {}; // exemple : transition.q0.a = {nextState: "q1", nextSymbol: "A", direction: "R"}
+    transitions = {}; // exemple : transitions.q0.a = {nextState: "q1", nextSymbol: "A", direction: "R"}
     tapes = [];
 
     cursorPos = [];
     currentState
 
     mtIsCorrect = true;
+    mtErrorCode = "";
 
     constructor(mtFileContent) {
         this.mtFileContent = mtFileContent;
@@ -84,7 +85,8 @@ class MachineTuring {
                 if (nbTapes == null){
                     nbTapes = transition[2].length;
                 } else {
-                    console.error("There is a different number of tapes");
+                    this.mtErrorCode = "There is a different number of tapes.";
+                    console.error(this.mtErrorCode);
                     this.mtIsCorrect = false;
                 }
             }
@@ -92,18 +94,22 @@ class MachineTuring {
             if (transition != "" && transition.toString().match((/\/\*.*\*\//)) == null){
                 // starts at 1 because transition[0] is the whole line
                 if ((! this.states.includes(transition[1])) || (! this.states.includes(transition[3]))){ // Check for an unknown state
-                    console.error("a state isn't in the states list.");
+                    this.mtErrorCode = "A state isn't in the states list.";
+                    console.error(this.mtErrorCode);
                     this.mtIsCorrect = false;
                 } else if (this.areUnknown(transition[2], this.tapeAlphabet) || this.areUnknown(transition[4], this.tapeAlphabet)){ // check for an unknown symbol
-                    console.error("a symbol isn't part of the alphabet");
+                    this.mtErrorCode = "A symbol isn't part of the alphabet.";
+                    console.error(this.mtErrorCode);
                     this.mtIsCorrect = false;
                 } else if (this.areUnknown(transition[5], ["L", "R"])) { // check for an other direction
-                    console.error("Unknown direction");
+                    this.mtErrorCode = "Unknown direction.";
+                    console.error(this.mtErrorCode);
                     this.mtIsCorrect = false;
                 } else {
                     if (transition[1] in this.transitions){ 
                         if (transition[2] in this.transitions[transition[1]]) { // nondeterministic Turing Machine
-                            console.error("Transition already exists. Cannot have a nondeterministic TM.");
+                            this.mtErrorCode = "Transition already exists. Cannot have a nondeterministic TM.";
+                            console.error(this.mtErrorCode);
                             this.mtIsCorrect = false;
                         } else {
                             this.transitions[transition[1]][transition[2]] = {nextState: transition[3], nextSymbol: transition[4], direction: transition[5]}
@@ -129,7 +135,8 @@ class MachineTuring {
         })
 
         if (unusedStates.length > 0){
-            console.error("There is at least one unused state.");
+            this.mtErrorCode = "There is at least one unused state.";
+            console.error(this.mtErrorCode);
             this.mtIsCorrect = false;
         }
 
@@ -146,7 +153,8 @@ class MachineTuring {
         this.tapes = [[...this.mtFileContent.match(regexInitialTape)[0]]]; // We are converting it to an array to be able to modify it
 
         if (this.checkTapes()){
-            console.error("Unknown initial symbol in one of the tapes.");
+            this.mtErrorCode = "Unknown initial symbol in one of the tapes.";
+            console.error(this.mtErrorCode);
             this.mtIsCorrect = false;            
         }
 
@@ -250,5 +258,10 @@ class MachineTuring {
         }
 
         return containsUnknown;
+    }
+
+
+    getErrorCode(){
+        return this.mtErrorCode;
     }
 }
